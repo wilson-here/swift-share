@@ -17,11 +17,12 @@ const Home = () => {
     localStorage.getItem("user") !== "undefined"
       ? JSON.parse(localStorage.getItem("user"))
       : localStorage.clear();
-  w;
   useEffect(() => {
     const query = userQuery(userInfo?.sub);
+
     client.fetch(query).then((data) => {
       setUser(data[0]);
+      console.log(data);
     });
   }, []);
   useEffect(() => {
