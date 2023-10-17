@@ -34,7 +34,7 @@ export default {
     {
       name: 'userId',
       title: 'userID',
-      type: 'image',
+      type: 'string',
     },
     {
       name: 'postedBy',
