@@ -16,14 +16,11 @@ const Feed = () => {
     if (categoryId) {
       const query = searchQuery(categoryId);
       client.fetch(query).then((data) => {
-        console.log("search query", data);
         setPins(data);
         setLoading(false);
       });
     } else {
       client.fetch(feedQuery).then((data) => {
-        console.log("all pins", data);
-
         setPins(data);
         setLoading(false);
       });
