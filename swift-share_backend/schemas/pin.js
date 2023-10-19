@@ -31,16 +31,19 @@ export default {
         hotspot: true,
       },
     },
+    // thông tin của author of pin
     {
       name: 'userId',
       title: 'userID',
       type: 'string',
     },
+    // postedBy: dùng làm template cho author of pin, user who saves
     {
       name: 'postedBy',
       title: 'PostedBy',
       type: 'postedBy',
     },
+    // save: mảng chứa thông tin người lưu pin
     {
       name: 'save',
       title: 'Save',

@@ -9,8 +9,8 @@ export default {
       type: 'postedBy',
     },
     {
-      name: 'comments',
-      title: 'Comments',
+      name: 'comment',
+      title: 'Comment',
       type: 'string',
     },
   ],

@@ -9,31 +9,32 @@ import { client, urlFor } from "../client";
 import { fetchUser } from "../utils/fetchUser";
 
 const Pin = ({ pin }) => {
-  console.log("pin ", pin);
   const { postedBy, image, _id, destination, save } = pin;
   const [postHovered, setPostHovered] = useState(false);
   const [savingPost, setSavingPost] = useState(false);
 
   const navigate = useNavigate();
   const user = fetchUser();
-  console.log("login user ", user);
-  const alreadySaved = !!save?.filter((item) => item.postedBy._id === user.sub)
+  console.log("user in pin.jsx (user object from google oauth)", user);
+  const alreadySaved = !!save?.filter((item) => item.postedBy?._id === user.sub)
     ?.length;
 
   const savePin = (id) => {
     if (!alreadySaved) {
       setSavingPost(true);
+      // thêm object instance của schema save c(thông tin của 1 người dùng lưu pin) vào mảng save của pin
       client
-        .patch(id)
+        .patch(id) // id của doc pin hiện tại
         .setIfMissing({ save: [] })
         .insert("after", "save[-1]", [
           {
             _key: uuidv4(),
-            userId: user.sub,
+            // lấy thong tin của user save post: tìm trong các doc của user schema, doc có id là id của người dùng hiện tại đang đăng nhập (user.sub)
             postedBy: {
               _type: "postedBy",
               _ref: user.sub,
             },
+            userId: user.sub,
           },
         ])
         .commit()

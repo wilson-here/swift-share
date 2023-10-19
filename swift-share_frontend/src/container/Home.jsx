@@ -17,7 +17,7 @@ const Home = () => {
   const userInfo = fetchUser();
 
   useEffect(() => {
-    const query = userQuery(userInfo?.sub);
+    const query = userQuery(userInfo?.sub); //id của người đang đăng nhập
     client.fetch(query).then((data) => {
       setUser(data[0]);
     });

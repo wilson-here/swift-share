@@ -3,6 +3,10 @@ import { Routes, Route } from "react-router-dom";
 import { Navbar, Feed, PinDetail, CreatePin, Search } from "../components";
 
 const Pins = ({ user }) => {
+  console.log(
+    "user in pins.jsx (user object created by sanity/ currently logged in user)",
+    user
+  );
   const [searchTerm, setSearchTerm] = useState("");
   return (
     <div className="px-2 md:px-5">

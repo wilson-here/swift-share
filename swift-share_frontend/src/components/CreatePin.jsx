@@ -10,10 +10,11 @@ const CreatePin = ({ user }) => {
   const [title, setTitle] = useState("");
   const [about, setAbout] = useState("");
   const [destination, setDestination] = useState("");
+  const [imageAsset, setImageAsset] = useState(null);
+  const [category, setCategory] = useState(null);
+
   const [loading, setLoading] = useState(false);
   const [fields, setFields] = useState(false);
-  const [category, setCategory] = useState(null);
-  const [imageAsset, setImageAsset] = useState(null);
   const [wrongImageType, setWrongImageType] = useState(false);
 
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const CreatePin = ({ user }) => {
       type === "image/png" ||
       type === "image/svg" ||
       type === "image/jpg" ||
+      type === "image/jpeg" ||
       type === "image/gif" ||
       type === "image/tiff"
     ) {
@@ -46,6 +48,41 @@ const CreatePin = ({ user }) => {
     }
   };
 
+  const createPin = () => {
+    if (title && about && destination && imageAsset?._id && category) {
+      const doc = {
+        _type: "pin",
+        title,
+        about,
+        destination,
+        category,
+        image: {
+          _type: "image",
+          asset: {
+            _type: "reference",
+            _ref: imageAsset?._id,
+          },
+        },
+        // id author of pin (người đang đăng nhập)
+        userId: user._id,
+        // user name và image của author of pin (người đang đăng nhập)
+        postedBy: {
+          _type: "postedBy",
+          _ref: user._id,
+        },
+      };
+
+      client.create(doc).then(() => {
+        navigate("/");
+      });
+    } else {
+      setFields(true);
+      setTimeout(() => {
+        setFields(false);
+      }, 2000);
+    }
+  };
+
   return (
     <div className="flex flex-col justify-center items-center mt-5 lg:h-4/5">
       {fields && (
@@ -53,7 +90,7 @@ const CreatePin = ({ user }) => {
           Please fill in all the fields
         </p>
       )}
-      <div className="flex lg:flex-row flex-col justify-center items-center bg-white lg:p-5 p-3 lg:w-4/5 w-full">
+      <div className="flex flex-col lg:flex-row justify-center items-center bg-white p-3 lg:p-5 w-full lg:w-4/5">
         <div className="bg-secondaryColor p-3 flex flex-0.7 w-full">
           <div className="flex justify-center items-center flex-col border-2 border-dotted border-gray-300 p-3 w-full h-420">
             {loading && <Spinner />}
@@ -83,7 +120,7 @@ const CreatePin = ({ user }) => {
                 <img
                   src={imageAsset?.url}
                   alt="uploaded-pic"
-                  className="h-full w- object-contain"
+                  className="h-full object-contain"
                 />
                 <button
                   type="button"
@@ -108,6 +145,70 @@ const CreatePin = ({ user }) => {
             placeholder="Add your title here"
             className="outline-none text-2xl sm:text-3xl font-bold border-b-2 border-gray-200 p-2"
           />
+          {user && (
+            <div className="flex gap-2 my-2 items-center bg-white rounded-lg">
+              <img
+                src={user.image}
+                className="w-10 h-10 rounded-full"
+                alt="user-profile"
+              />
+              <p className="font-bold">{user.userName}</p>
+            </div>
+          )}
+          <input
+            type="text"
+            value={about}
+            onChange={(e) => {
+              setAbout(e.target.value);
+            }}
+            placeholder="What is your pin about?"
+            className="outline-none text-base sm:text-lg border-b-2 border-gray-200 p-2"
+          />
+          <input
+            type="text"
+            value={destination}
+            onChange={(e) => {
+              setDestination(e.target.value);
+            }}
+            placeholder="Add a destination link"
+            className="outline-none text-base sm:text-lg border-b-2 border-gray-200 p-2"
+          />
+          <div className="flex flex-col">
+            <div>
+              <p className="mb-2 font-semibold text-lg sm:text-xl">
+                Choose Pin Category
+              </p>
+              <select
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                }}
+                className="outline-none w-4/5 text-base border-b-2 border-gray-200 p-2 rounded-md cursor-pointer capitalize"
+              >
+                <option value="other" className="bg-white">
+                  Select Category
+                </option>
+                {categories.map((cat) => {
+                  return (
+                    <option
+                      className="text-base border-0 outline-none capitalize bg-white text-black"
+                      value={cat.name}
+                    >
+                      {cat.name}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div className="flex justify-end items-end mt-5">
+              <button
+                type="button"
+                onClick={createPin}
+                className="bg-red-500 text-white font-bold p-2 rounded-full w-28 outline-none"
+              >
+                Save Pin
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
