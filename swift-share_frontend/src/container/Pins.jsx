@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import { Navbar, Feed, PinDetail, CreatePin, Search } from "../components";
+import { Navbar, Feed, PinDetails, CreatePin, Search } from "../components";
 
-const Pins = ({ user }) => {
-  console.log(
-    "user in pins.jsx (user object created by sanity/ currently logged in user)",
-    user
-  );
+const Pins = ({ user, scrollRef }) => {
+  // console.log(
+  //   "user in pins.jsx (user object created by sanity/ currently logged in user)",
+  //   user
+  // );
   const [searchTerm, setSearchTerm] = useState("");
   return (
     <div className="px-2 md:px-5">
@@ -23,7 +23,7 @@ const Pins = ({ user }) => {
           <Route path="/category/:categoryId" element={<Feed />}></Route>
           <Route
             path="/pin-detail/:pinId"
-            element={<PinDetail user={user} />}
+            element={<PinDetails user={user} scrollRef={scrollRef} />}
           ></Route>
           <Route path="/create-pin" element={<CreatePin user={user} />}></Route>
           <Route

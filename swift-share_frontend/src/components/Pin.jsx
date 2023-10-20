@@ -9,13 +9,13 @@ import { client, urlFor } from "../client";
 import { fetchUser } from "../utils/fetchUser";
 
 const Pin = ({ pin }) => {
-  const { postedBy, image, _id, destination, save } = pin;
+  const { postedBy, image, _id, destination, save } = pin; // thông tin về author of pin, image of pin, id of pin, link link of pin, những người save pin
   const [postHovered, setPostHovered] = useState(false);
   const [savingPost, setSavingPost] = useState(false);
 
   const navigate = useNavigate();
   const user = fetchUser();
-  console.log("user in pin.jsx (user object from google oauth)", user);
+  // console.log("user in pin.jsx (user object from google oauth)", user);
   const alreadySaved = !!save?.filter((item) => item.postedBy?._id === user.sub)
     ?.length;
 
@@ -113,9 +113,9 @@ const Pin = ({ pin }) => {
                   className="bg-white flex items-center gap-2 text-black font-bold p-2 pl-4 pr-4 rounded-full opacity-75 hover:opacity-100 hover:shadow-md"
                 >
                   <BsFillArrowUpRightCircleFill />
-                  {destination.length > 20
-                    ? destination.slice(8, 20)
-                    : destination.slice(8)}
+                  {destination.length > 15
+                    ? `${destination.slice(0, 15)}...`
+                    : { destination }}
                 </a>
               )}
 
@@ -140,11 +140,13 @@ const Pin = ({ pin }) => {
         className="flex gap-2 mt-2 items-center"
       >
         <img
-          src={user?.picture}
+          src={postedBy?.image}
           className="w-8 h-8 rounded-full object-cover"
           alt="user-profile"
         />
-        <p className="font-semibold capitalize">{postedBy?.userName}</p>
+        <p className="font-semibold capitalize text-xs sm:text-base">
+          {postedBy?.userName}
+        </p>
       </Link>
     </div>
   );

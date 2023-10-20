@@ -203,7 +203,7 @@ const CreatePin = ({ user }) => {
               <button
                 type="button"
                 onClick={createPin}
-                className="bg-red-500 text-white font-bold p-2 rounded-full w-28 outline-none"
+                className="bg-red-500 text-white font-bold p-2 rounded-full w-28 outline-none hover:opacity-75 transition-opacity durations-500 ease-in-out"
               >
                 Save Pin
               </button>

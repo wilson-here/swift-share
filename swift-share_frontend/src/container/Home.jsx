@@ -17,7 +17,9 @@ const Home = () => {
   const userInfo = fetchUser();
 
   useEffect(() => {
-    const query = userQuery(userInfo?.sub); //id của người đang đăng nhập
+    const query = userQuery(
+      userInfo?.sub //id của người đang đăng nhập
+    );
     client.fetch(query).then((data) => {
       setUser(data[0]);
     });
@@ -61,10 +63,17 @@ const Home = () => {
           </div>
         )}
       </div>
-      <div className="pb-2 flex-1 h-screen overflow-y-scroll" ref={scrollRef}>
+      <div
+        className="pb-2 flex-1 h-screen overflow-y-scroll"
+        ref={scrollRef}
+        style={{ scrollBehavior: "smooth" }}
+      >
         <Routes>
           <Route path="/user-profile/:userId" element={<UserProfile />} />
-          <Route path="/*" element={<Pins user={user && user} />} />
+          <Route
+            path="/*"
+            element={<Pins user={user && user} scrollRef={scrollRef} />}
+          />
         </Routes>
       </div>
     </div>

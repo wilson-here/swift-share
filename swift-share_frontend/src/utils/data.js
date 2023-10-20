@@ -1,12 +1,13 @@
+import luImage from "../assets/img/cat/lu.jpg";
+
 export const categories = [
   {
     name: "lu 🐷🐷🐷",
-    image: "../assets/img/cat/lu.jpg",
+    image: luImage,
   },
   {
     name: "coding",
-    image:
-      "https://www.shutterstock.com/image-vector/coding-logo-template-illustration-design-260nw-684599965.jpg",
+    image: "https://cdn-icons-png.flaticon.com/512/268/268998.png",
   },
   {
     name: "gym",
@@ -28,6 +29,7 @@ export const categories = [
   },
 ];
 
+// retrieve the user info from Sanity's database based on the userId
 export const userQuery = (userId) => {
   const query = `*[_type=="user" && _id=='${userId}']`;
   return query;
@@ -84,23 +86,25 @@ export const feedQuery = `*[_type == "pin"] | order(_createdAt desc) {
 
 export const pinDetailQuery = (pinId) => {
   const query = `*[_type == "pin" && _id == '${pinId}']{
+    // image of the pin
     image{
       asset->{
         url
       }
     },
-    _id, // id of the pin doc 
+    // id of the pin doc 
+    _id,  
     title, 
     about,
     category,
     destination,
-    // thông tin author of pin
+    // thông tin author of pin 
     postedBy->{
       _id,
       userName,
       image
     },
-    // mảng chứa thông tin tất cả người lưu pin
+    // mảng chứa thông tin tất cả người lưu pin 
    save[]{ 
       postedBy->{
         _id,
@@ -109,9 +113,11 @@ export const pinDetailQuery = (pinId) => {
       },
     },
     comments[]{
-      _key, /* id của từng comment cho pin này */
-      comment, // nội dung comment
-      // người comment
+      // id của từng comment cho pin này 
+      _key, 
+      // nội dung comment 
+      comment, 
+      // người comment 
       postedBy->{
         _id,
         userName,
