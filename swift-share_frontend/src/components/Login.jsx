@@ -47,7 +47,6 @@ const Login = () => {
                 console.log("Login Failed");
               }}
             />
-            ;
           </div>
         </div>
       </div>

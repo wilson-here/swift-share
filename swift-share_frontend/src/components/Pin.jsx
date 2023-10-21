@@ -16,8 +16,9 @@ const Pin = ({ pin }) => {
   const navigate = useNavigate();
   const user = fetchUser();
   // console.log("user in pin.jsx (user object from google oauth)", user);
-  const alreadySaved = !!save?.filter((item) => item.postedBy?._id === user.sub)
-    ?.length;
+  const alreadySaved = !!save?.filter(
+    (item) => item.postedBy?._id === user?.sub
+  )?.length;
 
   const savePin = (id) => {
     if (!alreadySaved) {
@@ -32,9 +33,9 @@ const Pin = ({ pin }) => {
             // lấy thong tin của user save post: tìm trong các doc của user schema, doc có id là id của người dùng hiện tại đang đăng nhập (user.sub)
             postedBy: {
               _type: "postedBy",
-              _ref: user.sub,
+              _ref: user?.sub,
             },
-            userId: user.sub,
+            userId: user?.sub,
           },
         ])
         .commit()
@@ -119,7 +120,7 @@ const Pin = ({ pin }) => {
                 </a>
               )}
 
-              {postedBy?._id === user.sub && (
+              {postedBy?._id === user?.sub && (
                 <button
                   type="button"
                   onClick={(e) => {

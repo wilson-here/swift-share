@@ -8,6 +8,7 @@ export default {
       title: 'PostedBy',
       type: 'postedBy',
     },
+    // thong tin nguoi luu pin
     {
       name: 'userId',
       title: 'UserId',
