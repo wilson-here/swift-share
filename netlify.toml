@@ -1,0 +1,4 @@
+[build]
+  base = "swift-share_frontend"  # Set the base directory to the 'frontend' folder
+  publish = "build"  # Set the publish directory within the 'frontend' folder
+  command = "npm run build"  # Specify the build command for your frontend (adjust this according to your setup)
