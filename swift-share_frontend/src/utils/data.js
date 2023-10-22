@@ -27,6 +27,10 @@ export const categories = [
     image:
       "https://media.proprofs.com/images/FC/user_images/1859857/5272673854.png",
   },
+  {
+    name: "others",
+    image: "https://cdn-icons-png.flaticon.com/128/7183/7183234.png",
+  },
 ];
 
 // retrieve the user info from Sanity's database based on the userId
