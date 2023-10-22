@@ -111,23 +111,22 @@ const Pin = ({ pin }) => {
                   href={destination}
                   target="_blank"
                   rel="noreferrer"
-                  className="bg-white flex items-center gap-2 text-black font-bold p-2 pl-4 pr-4 rounded-full opacity-75 hover:opacity-100 hover:shadow-md"
+                  className="bg-white flex gap-2 items-center text-black font-bold p-2 pl-4 pr-4 rounded-full opacity-75 hover:opacity-100 hover:shadow-md overflow-hidden"
                 >
-                  <BsFillArrowUpRightCircleFill />
-                  {destination.length > 15
-                    ? `${destination.slice(0, 15)}...`
-                    : { destination }}
+                  <BsFillArrowUpRightCircleFill className="flex-shrink-0" />
+
+                  <span className="truncate">{destination}</span>
                 </a>
               )}
 
-              {postedBy?._id === user?.sub && (
+              {postedBy?._id === user?.sub && ( // if the user is the pin author then allow deletion
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     deletePin(_id);
                   }}
-                  className="bg-white p-2 opacity-70 hover:opacity-100 text-dark font-bold text-base rounded-3xl hover:shadow-md outline-none"
+                  className="bg-white p-2 opacity-70 hover:opacity-100 text-dark font-bold text-base rounded-3xl hover:shadow-md outline-none flex-shrink-0"
                 >
                   <AiTwotoneDelete />
                 </button>
