@@ -89,7 +89,7 @@ const PinDetail = ({ user, scrollRef }) => {
           />
         </div>
         <div className="w-full p-5 flex-1 xl:min-w-620">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-start">
             <div className="flex gap-2 items-center ">
               <a
                 href={`${pinDetails?.image?.asset?.url}?dl=`}
@@ -102,7 +102,12 @@ const PinDetail = ({ user, scrollRef }) => {
                 <MdDownloadForOffline />
               </a>
             </div>
-            <a href={pinDetails.destination} target="_blank" rel="noreferrer">
+            <a
+              href={pinDetails.destination}
+              target="_blank"
+              rel="noreferrer"
+              className="truncate"
+            >
               {pinDetails.destination}
             </a>
           </div>
