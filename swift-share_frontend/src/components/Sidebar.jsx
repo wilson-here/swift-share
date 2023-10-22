@@ -4,7 +4,7 @@ import { RiHomeFill } from "react-icons/ri";
 import { IoIosArrowForward } from "react-icons/io";
 import { categories } from "../utils/data.js";
 
-import logo from "../assets/logo.png";
+import logo from "../assets/logo-yellow.svg";
 const isNotActiveStyle =
   "flex items-center px-5 gap-3 hover:text-gray-500 text-black transition-all duration-200 ease-in-out capitalize px-5 py-3 text-sm 2xl:text-base capitalize transition-color duration-500 ease-in-out";
 const isActiveStyle =
@@ -70,7 +70,7 @@ const Sidebar = ({ user, closeToggle }) => {
             className="w-10 h-10 rounded-full"
             alt="user-profile"
           />
-          <p>{user.userName}</p>
+          <p className="font-semibold">{user.userName}</p>
         </Link>
       )}
     </div>

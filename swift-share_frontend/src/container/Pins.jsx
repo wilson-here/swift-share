@@ -9,7 +9,7 @@ const Pins = ({ user, scrollRef }) => {
   // );
   const [searchTerm, setSearchTerm] = useState("");
   return (
-    <div className="px-2 md:px-5">
+    <div className="px-2 md:px-5 h-full flex flex-col">
       <div className="bg-gray-50">
         <Navbar
           searchTerm={searchTerm}
@@ -17,7 +17,7 @@ const Pins = ({ user, scrollRef }) => {
           user={user}
         />
       </div>
-      <div className="h-full">
+      <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Feed />}></Route>
           <Route path="/category/:categoryId" element={<Feed />}></Route>
