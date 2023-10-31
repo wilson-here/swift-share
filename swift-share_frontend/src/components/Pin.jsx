@@ -5,17 +5,22 @@ import { MdDownloadForOffline } from "react-icons/md";
 import { AiTwotoneDelete } from "react-icons/ai";
 import { BsFillArrowUpRightCircleFill } from "react-icons/bs";
 
+import { SkeletonTheme } from "react-loading-skeleton";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 import { client, urlFor } from "../client";
 import { fetchUser } from "../utils/fetchUser";
 
 const Pin = ({ pin }) => {
   const { postedBy, image, _id, destination, save } = pin; // thông tin về author of pin, image of pin, id of pin, link link of pin, những người save pin
+  const dimensions = image?.asset?.metadata?.dimensions;
+  console.log(dimensions);
   const [postHovered, setPostHovered] = useState(false);
   const [savingPost, setSavingPost] = useState(false);
 
   const navigate = useNavigate();
   const user = fetchUser();
-  // console.log("user in pin.jsx (user object from google oauth)", user);
   const alreadySaved = !!save?.filter(
     (item) => item.postedBy?._id === user?.sub
   )?.length;
@@ -50,8 +55,9 @@ const Pin = ({ pin }) => {
       window.location.reload();
     });
   };
+
   return (
-    <div className="m-2">
+    <div className="m-2 text-5xl">
       <div
         onMouseEnter={() => {
           setPostHovered(true);
@@ -65,8 +71,9 @@ const Pin = ({ pin }) => {
         <img
           className="rounded-lg w-full"
           alt="user-post"
-          src={urlFor(image).width(250).url()}
+          src={urlFor(image)}
         />
+
         {postHovered && (
           <div
             className="absolute top-0 w-full h-full flex flex-col justify-between p-1 pr-2 pt-2 pb-2 z-50"
@@ -135,6 +142,8 @@ const Pin = ({ pin }) => {
           </div>
         )}
       </div>
+
+      {/* user profile starts */}
       <Link
         to={`user-profile/${postedBy?._id}`}
         className="flex gap-2 mt-2 items-center"
@@ -148,6 +157,7 @@ const Pin = ({ pin }) => {
           {postedBy?.userName}
         </p>
       </Link>
+      {/* user profile ends */}
     </div>
   );
 };

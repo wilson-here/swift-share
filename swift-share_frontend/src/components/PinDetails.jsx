@@ -9,10 +9,6 @@ import { pinDetailMorePinQuery, pinDetailQuery } from "../utils/data";
 import Spinner from "./Spinner";
 
 const PinDetail = ({ user, scrollRef }) => {
-  // console.log(
-  //   "user in pin details / currently logged in user/ from sanity database",
-  //   user
-  // );
   const [pins, setPins] = useState(null); // more similar pins
   const [pinDetails, setPinDetails] = useState(null);
   const [comment, setComment] = useState("");
@@ -70,8 +66,6 @@ const PinDetail = ({ user, scrollRef }) => {
   useEffect(() => {
     fetchPinDetails();
   }, [pinId]);
-
-  // console.log("pinDetails", pinDetails);
 
   if (!pinDetails) return <Spinner message="Loading pin ..." />;
 

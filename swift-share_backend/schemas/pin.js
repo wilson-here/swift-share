@@ -29,6 +29,7 @@ export default {
       type: 'image',
       options: {
         hotspot: true,
+        metadata: ['exif', 'location', 'lqip', 'blurhash', 'palette'],
       },
     },
     // thông tin của author of pin

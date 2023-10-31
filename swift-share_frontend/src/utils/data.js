@@ -68,7 +68,8 @@ export const searchQuery = (searchTerm) => {
 export const feedQuery = `*[_type == "pin"] | order(_createdAt desc) {
   image{
     asset->{
-      url
+      url,
+      metadata
     }
   },
   _id,
