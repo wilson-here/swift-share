@@ -1,23 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { MdDownloadForOffline } from "react-icons/md";
 import { AiTwotoneDelete } from "react-icons/ai";
-import { BsFillArrowUpRightCircleFill } from "react-icons/bs";
-
-import { SkeletonTheme } from "react-loading-skeleton";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import { BsFillArrowUpRightCircleFill, BsImage } from "react-icons/bs";
 
 import { client, urlFor } from "../client";
 import { fetchUser } from "../utils/fetchUser";
+import Skeleton from "react-loading-skeleton";
+import { decode } from "blurhash";
 
 const Pin = ({ pin }) => {
   const { postedBy, image, _id, destination, save } = pin; // thông tin về author of pin, image of pin, id of pin, link link of pin, những người save pin
-  const dimensions = image?.asset?.metadata?.dimensions;
-  console.log(dimensions);
+  const imgDimensions = pin?.image?.asset?.metadata?.dimensions;
+  // const blurHash = pin?.image?.asset?.metadata?.blurHash;
+  // const pixels = decode(blurHash, 100, 100);
+
   const [postHovered, setPostHovered] = useState(false);
   const [savingPost, setSavingPost] = useState(false);
+  const [imageLoad, setImageLoad] = useState(false);
+
+  // const canvas = document.createElement("canvas");
+  // const ctx = canvas.getContext("2d");
+  // const imageData = ctx.createImageData(100, 100);
+  // imageData.data.set(pixels);
+  // ctx.putImageData(imageData, 0, 0);
+  // const dataUrl = canvas.toDataURL();
 
   const navigate = useNavigate();
   const user = fetchUser();
@@ -56,8 +64,13 @@ const Pin = ({ pin }) => {
     });
   };
 
+  const handleImageLoad = (e) => {
+    e.target.classList.remove("hidden");
+    setImageLoad(true);
+  };
+
   return (
-    <div className="m-2 text-5xl">
+    <div className="mx-2 my-4 ">
       <div
         onMouseEnter={() => {
           setPostHovered(true);
@@ -66,17 +79,41 @@ const Pin = ({ pin }) => {
           setPostHovered(false);
         }}
         onClick={() => navigate(`/pin-detail/${_id}`)}
-        className="relative cursor-zoom-in w-auto hover:shadow-lg rounded-lg overflow-hidden transition-all duration-500 ease-in-out"
+        className="relative cursor-zoom-in w-auto rounded-lg overflow-hidden transition-all duration-500 ease-in-out hover:shadow-lg"
+        id="canvas"
       >
         <img
-          className="rounded-lg w-full"
+          className="rounded-lg w-full hidden"
           alt="user-post"
-          src={urlFor(image)}
+          src={image.asset.url}
+          onLoad={(e) => {
+            handleImageLoad(e);
+          }}
         />
+        {imageLoad ? null : (
+          <Skeleton
+            height={0}
+            style={{
+              paddingBottom: `${(1 / imgDimensions?.aspectRatio) * 100}%`,
+              backgroundImage: "url()",
+            }}
+            className="rounded-lg"
+          />
+        )}
+        {/* <div
+          height={0}
+          style={{
+            paddingBottom: `${(1 / imgDimensions?.aspectRatio) * 100}%`,
+            backgroundImage: `url(${dataUrl})`,
+            // backgroundRepeat: "no-repeat",
+            // backgroundSize: "cover",
+          }}
+          className="rounded-lg w-full"
+        ></div> */}
 
         {postHovered && (
           <div
-            className="absolute top-0 w-full h-full flex flex-col justify-between p-1 pr-2 pt-2 pb-2 z-50"
+            className="absolute top-0 w-full h-full flex flex-col justify-between p-2 z-50"
             style={{ height: "100%" }}
           >
             <div className="flex items-center justify-between">
@@ -118,7 +155,7 @@ const Pin = ({ pin }) => {
                   href={destination}
                   target="_blank"
                   rel="noreferrer"
-                  className="bg-white flex gap-2 items-center text-black font-bold p-2 pl-4 pr-4 rounded-full opacity-75 hover:opacity-100 hover:shadow-md overflow-hidden"
+                  className="bg-white flex gap-2 items-center text-black font-bold px-2 py-1 rounded-full opacity-75 hover:opacity-100 hover:shadow-md overflow-hidden"
                 >
                   <BsFillArrowUpRightCircleFill className="flex-shrink-0" />
 
@@ -146,16 +183,26 @@ const Pin = ({ pin }) => {
       {/* user profile starts */}
       <Link
         to={`user-profile/${postedBy?._id}`}
-        className="flex gap-2 mt-2 items-center"
+        className="flex gap-1 mt-1 items-center"
       >
-        <img
-          src={postedBy?.image}
-          className="w-8 h-8 rounded-full object-cover"
-          alt="user-profile"
-        />
-        <p className="font-semibold capitalize text-xs sm:text-base">
-          {postedBy?.userName}
-        </p>
+        {(
+          <img
+            src={postedBy?.image}
+            className="w-8 h-8 rounded-full object-cover"
+            alt="user-profile"
+          />
+        ) || <Skeleton className="w-8 h-8 rounded-full object-cover" />}
+        {(
+          <p className="font-semibold capitalize text-xs sm:text-base">
+            {postedBy?.userName}
+          </p>
+        ) || (
+          <Skeleton
+            containerClassName="grow"
+            className="font-semibold capitalize text-xs sm:text-base"
+            count={1}
+          />
+        )}
       </Link>
       {/* user profile ends */}
     </div>
