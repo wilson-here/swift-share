@@ -65,7 +65,7 @@ export const searchQuery = (searchTerm) => {
   return query;
 };
 
-export const feedQuery = `*[_type == "pin"] | order(_createdAt desc) {
+export const initialLoadQuery = `*[_type == "pin"] | order(_createdAt desc) {
   image{
     asset->{
       url,
@@ -87,7 +87,33 @@ export const feedQuery = `*[_type == "pin"] | order(_createdAt desc) {
       image
     },
   },
-}`;
+}[0..9]`;
+
+export const loadMoreQuery = (
+  alreadyPinNum
+) => `*[_type == "pin"] | order(_createdAt desc) {
+  image{
+    asset->{
+      url,
+      metadata
+    }
+  },
+  _id,
+  destination,
+  postedBy->{
+    _id,
+    userName,
+    image
+  },
+  save[]{
+    _key,
+    postedBy->{
+      _id,
+      userName,
+      image
+    },
+  },
+}[0..${alreadyPinNum + 10}]`;
 
 export const pinDetailQuery = (pinId) => {
   const query = `*[_type == "pin" && _id == '${pinId}']{

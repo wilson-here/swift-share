@@ -7,25 +7,18 @@ import { BsFillArrowUpRightCircleFill, BsImage } from "react-icons/bs";
 
 import { client, urlFor } from "../client";
 import { fetchUser } from "../utils/fetchUser";
-import Skeleton from "react-loading-skeleton";
-import { decode } from "blurhash";
+import { Blurhash } from "react-blurhash";
 
 const Pin = ({ pin }) => {
   const { postedBy, image, _id, destination, save } = pin; // thông tin về author of pin, image of pin, id of pin, link link of pin, những người save pin
   const imgDimensions = pin?.image?.asset?.metadata?.dimensions;
-  // const blurHash = pin?.image?.asset?.metadata?.blurHash;
-  // const pixels = decode(blurHash, 100, 100);
+  const blurHash = pin?.image?.asset?.metadata?.blurHash;
+
+  const pinBg = pin?.image?.asset?.metadata?.palette?.dominant?.background;
 
   const [postHovered, setPostHovered] = useState(false);
   const [savingPost, setSavingPost] = useState(false);
   const [imageLoad, setImageLoad] = useState(false);
-
-  // const canvas = document.createElement("canvas");
-  // const ctx = canvas.getContext("2d");
-  // const imageData = ctx.createImageData(100, 100);
-  // imageData.data.set(pixels);
-  // ctx.putImageData(imageData, 0, 0);
-  // const dataUrl = canvas.toDataURL();
 
   const navigate = useNavigate();
   const user = fetchUser();
@@ -65,12 +58,13 @@ const Pin = ({ pin }) => {
   };
 
   const handleImageLoad = (e) => {
-    e.target.classList.remove("hidden");
+    e.target.classList.remove("opacity-0");
+    e.target.nextElementSibling.classList.add("opacity-0");
     setImageLoad(true);
   };
 
   return (
-    <div className="mx-2 my-4 ">
+    <div className="mx-2 my-4 pin">
       <div
         onMouseEnter={() => {
           setPostHovered(true);
@@ -79,37 +73,32 @@ const Pin = ({ pin }) => {
           setPostHovered(false);
         }}
         onClick={() => navigate(`/pin-detail/${_id}`)}
-        className="relative cursor-zoom-in w-auto rounded-lg overflow-hidden transition-all duration-500 ease-in-out hover:shadow-lg"
-        id="canvas"
+        className="relative cursor-zoom-in w-auto h-0 rounded-lg overflow-hidden transition-all duration-500 ease-in-out hover:shadow-lg"
+        style={{
+          paddingBottom: `${100 / imgDimensions?.aspectRatio}%`,
+        }}
       >
         <img
-          className="rounded-lg w-full hidden"
+          className="rounded-lg w-full opacity-0 transition-opacity duration-500 ease-in-out"
           alt="user-post"
           src={image.asset.url}
           onLoad={(e) => {
             handleImageLoad(e);
           }}
         />
-        {imageLoad ? null : (
-          <Skeleton
-            height={0}
-            style={{
-              paddingBottom: `${(1 / imgDimensions?.aspectRatio) * 100}%`,
-              backgroundImage: "url()",
-            }}
-            className="rounded-lg"
-          />
-        )}
-        {/* <div
-          height={0}
+        <Blurhash
+          hash={blurHash}
+          resolutionX={32}
+          resolutionY={32}
+          punch={1}
           style={{
-            paddingBottom: `${(1 / imgDimensions?.aspectRatio) * 100}%`,
-            backgroundImage: `url(${dataUrl})`,
-            // backgroundRepeat: "no-repeat",
-            // backgroundSize: "cover",
+            width: "100%",
+            height: "0",
+            paddingBottom: `${100 / imgDimensions?.aspectRatio}%`,
+            borderRadius: "0.5rem",
           }}
-          className="rounded-lg w-full"
-        ></div> */}
+          className="blurhash transition-opacity duration-500 ease-in-out top-0 left-0"
+        />
 
         {postHovered && (
           <div
@@ -185,24 +174,14 @@ const Pin = ({ pin }) => {
         to={`user-profile/${postedBy?._id}`}
         className="flex gap-1 mt-1 items-center"
       >
-        {(
-          <img
-            src={postedBy?.image}
-            className="w-8 h-8 rounded-full object-cover"
-            alt="user-profile"
-          />
-        ) || <Skeleton className="w-8 h-8 rounded-full object-cover" />}
-        {(
-          <p className="font-semibold capitalize text-xs sm:text-base">
-            {postedBy?.userName}
-          </p>
-        ) || (
-          <Skeleton
-            containerClassName="grow"
-            className="font-semibold capitalize text-xs sm:text-base"
-            count={1}
-          />
-        )}
+        <img
+          src={postedBy?.image}
+          className="w-6 h-6 lg:w-8 lg:h-8 rounded-full object-cover"
+          alt="user-profile"
+        />
+        <p className="font-semibold capitalize text-xs sm:text-base">
+          {postedBy?.userName}
+        </p>
       </Link>
       {/* user profile ends */}
     </div>

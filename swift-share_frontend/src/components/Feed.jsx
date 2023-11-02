@@ -4,12 +4,12 @@ import { useParams } from "react-router-dom";
 import { client } from "../client";
 import MasonryLayout from "./MasonryLayout.jsx";
 import Spinner from "./Spinner";
-import { feedQuery, searchQuery } from "../utils/data";
+import { initialLoadQuery, searchQuery } from "../utils/data";
 
 const Feed = () => {
   const [loading, setLoading] = useState(false);
-  const [pins, setPins] = useState(null);
   const { categoryId } = useParams();
+  const [pins, setPins] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -17,11 +17,10 @@ const Feed = () => {
       const query = searchQuery(categoryId);
       client.fetch(query).then((data) => {
         setPins(data);
-
         setLoading(false);
       });
     } else {
-      client.fetch(feedQuery).then((data) => {
+      client.fetch(initialLoadQuery).then((data) => {
         setPins(data);
         setLoading(false);
       });
@@ -32,7 +31,7 @@ const Feed = () => {
     return <Spinner message="We are adding new ideas to your feed" />;
 
   if (!pins?.length) return <h2>No pins available</h2>;
-  return <div>{pins && <MasonryLayout pins={pins} />}</div>;
+  return <div>{pins && <MasonryLayout pins={pins} setPins={setPins} />}</div>;
 };
 
 export default Feed;

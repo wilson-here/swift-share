@@ -117,7 +117,7 @@ const PinDetail = ({ user, scrollRef }) => {
           >
             <img
               src={pinDetails?.postedBy?.image}
-              className="w-8 h-8 rounded-full object-cover"
+              className="w-6 h-6 lg:w-8 lg:h-8rounded-full object-cover"
               alt="user-profile"
             />
             <p className="font-semibold capitalize">

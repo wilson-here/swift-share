@@ -48,7 +48,7 @@ const Home = () => {
             <img
               src={user?.image}
               alt="logo"
-              className="w-16 rounded-full object-cover"
+              className="w-10 lg:w-16 rounded-full object-cover"
             />
           </Link>
         </div>
@@ -68,7 +68,8 @@ const Home = () => {
         )}
       </div>
       <div
-        className="pb-2 flex-1 h-screen overflow-y-scroll"
+        className="pb-2 flex-1 h-screen overflow-y-scroll overflow-x-hidden"
+        id="right"
         ref={scrollRef}
         style={{ scrollBehavior: "smooth" }}
       >

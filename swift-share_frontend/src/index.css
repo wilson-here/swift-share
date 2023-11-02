@@ -8,3 +8,11 @@ body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.pin canvas {
+  border-radius: 0.5rem;
+}
+
+.pin .blurhash {
+  position: absolute !important;
+}

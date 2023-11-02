@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import MasonryLayout from "./MasonryLayout";
 import { client } from "../client";
-import { feedQuery, searchQuery } from "../utils/data";
+import { initialLoadQuery, searchQuery } from "../utils/data";
 import Spinner from "./Spinner";
 
 const Search = ({ searchTerm }) => {
@@ -17,7 +17,7 @@ const Search = ({ searchTerm }) => {
         setLoading(false);
       });
     } else {
-      client.fetch(feedQuery).then((data) => {
+      client.fetch(initialLoadQuery).then((data) => {
         setPins(data);
         setLoading(false);
       });
