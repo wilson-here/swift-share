@@ -21,10 +21,9 @@ const MasonryLayout = ({ pins, setPins, additionalClass }) => {
 
   const fetchData = async () => {
     const result = await client.fetch(loadMoreQuery(pins?.length));
+    setPins(result);
     if (result.length === pins?.length) {
       setHasMore(false);
-    } else {
-      setPins(result);
     }
   };
 
