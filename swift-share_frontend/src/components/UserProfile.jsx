@@ -122,7 +122,7 @@ const UserProfile = () => {
           </div>
           {pins?.length ? (
             <div className="px-2">
-              <MasonryLayout pins={pins} />
+              <MasonryLayout pins={pins} setPins={setPins} />
             </div>
           ) : (
             <div className="flex justify-center font-bold items-center w-full text-xl mt-2">

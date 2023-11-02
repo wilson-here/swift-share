@@ -178,7 +178,11 @@ const PinDetail = ({ user, scrollRef }) => {
           <h2 className="text-center font-bold text-2xl mt-8 mb-4">
             More like this
           </h2>
-          <MasonryLayout pins={pins} />
+          <MasonryLayout
+            pins={pins}
+            setPins={setPins}
+            cat={pinDetails.category}
+          />
         </>
       ) : (
         <Spinner message="Loading more pins..." />

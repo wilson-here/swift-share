@@ -115,6 +115,33 @@ export const loadMoreQuery = (
   },
 }[0..${alreadyPinNum + 10}]`;
 
+export const loadMoreQuerySameCat = (
+  alreadyPinNum,
+  cat
+) => `*[_type == "pin" && category == "${cat}"] | order(_createdAt desc) {
+  image{
+    asset->{
+      url,
+      metadata
+    }
+  },
+  _id,
+  destination,
+  postedBy->{
+    _id,
+    userName,
+    image
+  },
+  save[]{
+    _key,
+    postedBy->{
+      _id,
+      userName,
+      image
+    },
+  },
+}[0..${alreadyPinNum + 10}]`;
+
 export const pinDetailQuery = (pinId) => {
   const query = `*[_type == "pin" && _id == '${pinId}']{
     // image of the pin

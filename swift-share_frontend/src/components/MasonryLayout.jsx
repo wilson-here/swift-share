@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
 import Pin from "./Pin";
 import { client } from "../client";
-import { initialLoadQuery, loadMoreQuery } from "../utils/data";
+import {
+  initialLoadQuery,
+  loadMoreQuery,
+  loadMoreQuerySameCat,
+} from "../utils/data";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Spinner from "./Spinner";
 
@@ -16,11 +20,16 @@ const breakpointObj = {
   375: 1,
 };
 
-const MasonryLayout = ({ pins, setPins, additionalClass }) => {
+const MasonryLayout = ({ pins, setPins, additionalClass, cat }) => {
   const [hasMore, setHasMore] = useState(true);
 
   const fetchData = async () => {
-    const result = await client.fetch(loadMoreQuery(pins?.length));
+    let result;
+    if (!cat) {
+      result = await client.fetch(loadMoreQuery(pins?.length));
+    } else {
+      result = await client.fetch(loadMoreQuerySameCat(pins?.length, cat));
+    }
     setPins(result);
     if (result.length === pins?.length) {
       setHasMore(false);

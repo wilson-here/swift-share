@@ -14,8 +14,6 @@ const Pin = ({ pin }) => {
   const imgDimensions = pin?.image?.asset?.metadata?.dimensions;
   const blurHash = pin?.image?.asset?.metadata?.blurHash;
 
-  const pinBg = pin?.image?.asset?.metadata?.palette?.dominant?.background;
-
   const [postHovered, setPostHovered] = useState(false);
   const [savingPost, setSavingPost] = useState(false);
   const [imageLoad, setImageLoad] = useState(false);
@@ -58,8 +56,8 @@ const Pin = ({ pin }) => {
   };
 
   const handleImageLoad = (e) => {
-    e.target.classList.remove("opacity-0");
-    e.target.nextElementSibling.classList.add("opacity-0");
+    e?.target?.classList?.remove("opacity-0");
+    e?.target?.nextElementSibling?.classList.add("opacity-0");
     setImageLoad(true);
   };
 
@@ -86,19 +84,21 @@ const Pin = ({ pin }) => {
             handleImageLoad(e);
           }}
         />
-        <Blurhash
-          hash={blurHash}
-          resolutionX={32}
-          resolutionY={32}
-          punch={1}
-          style={{
-            width: "100%",
-            height: "0",
-            paddingBottom: `${100 / imgDimensions?.aspectRatio}%`,
-            borderRadius: "0.5rem",
-          }}
-          className="blurhash transition-opacity duration-500 ease-in-out top-0 left-0"
-        />
+        {blurHash && (
+          <Blurhash
+            hash={blurHash}
+            resolutionX={32}
+            resolutionY={32}
+            punch={1}
+            style={{
+              width: "100%",
+              height: "0",
+              paddingBottom: `${100 / imgDimensions?.aspectRatio}%`,
+              borderRadius: "0.5rem",
+            }}
+            className="blurhash transition-opacity duration-500 ease-in-out top-0 left-0"
+          />
+        )}
 
         {postHovered && (
           <div
