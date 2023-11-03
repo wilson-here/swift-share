@@ -11,8 +11,9 @@ import { Blurhash } from "react-blurhash";
 
 const Pin = ({ pin }) => {
   const { postedBy, image, _id, destination, save } = pin; // thông tin về author of pin, image of pin, id of pin, link link of pin, những người save pin
-  const imgDimensions = pin?.image?.asset?.metadata?.dimensions;
-  const blurHash = pin?.image?.asset?.metadata?.blurHash;
+  const imgDimensions = image?.asset?.metadata?.dimensions;
+  const blurHash = image?.asset?.metadata?.blurHash;
+  const paddingBottom = 100 / imgDimensions?.aspectRatio + "%";
 
   const [postHovered, setPostHovered] = useState(false);
   const [savingPost, setSavingPost] = useState(false);
@@ -20,9 +21,11 @@ const Pin = ({ pin }) => {
 
   const navigate = useNavigate();
   const user = fetchUser();
-  const alreadySaved = !!save?.filter(
+  const alreadySaved = save?.filter(
     (item) => item.postedBy?._id === user?.sub
   )?.length;
+
+  const [alreadySavedStatus, setAlreadySavedStatus] = useState(false);
 
   const savePin = (id) => {
     if (!alreadySaved) {
@@ -44,7 +47,8 @@ const Pin = ({ pin }) => {
         ])
         .commit()
         .then(() => {
-          window.location.reload();
+          // window.location.reload();
+          setAlreadySavedStatus(true);
           setSavingPost(false);
         });
     }
@@ -56,7 +60,7 @@ const Pin = ({ pin }) => {
   };
 
   const handleImageLoad = (e) => {
-    e?.target?.classList?.remove("opacity-0");
+    e.target.classList.remove("opacity-0");
     e?.target?.nextElementSibling?.classList.add("opacity-0");
     setImageLoad(true);
   };
@@ -73,32 +77,31 @@ const Pin = ({ pin }) => {
         onClick={() => navigate(`/pin-detail/${_id}`)}
         className="relative cursor-zoom-in w-auto h-0 rounded-lg overflow-hidden transition-all duration-500 ease-in-out hover:shadow-lg"
         style={{
-          paddingBottom: `${100 / imgDimensions?.aspectRatio}%`,
+          paddingBottom: `${paddingBottom}`,
         }}
       >
         <img
-          className="rounded-lg w-full opacity-0 transition-opacity duration-500 ease-in-out"
+          src={image?.asset.url}
           alt="user-post"
-          src={image.asset.url}
+          className="rounded-lg w-full opacity-0 transition-opacity duration-500 ease-in-out"
           onLoad={(e) => {
             handleImageLoad(e);
           }}
         />
-        {blurHash && (
-          <Blurhash
-            hash={blurHash}
-            resolutionX={32}
-            resolutionY={32}
-            punch={1}
-            style={{
-              width: "100%",
-              height: "0",
-              paddingBottom: `${100 / imgDimensions?.aspectRatio}%`,
-              borderRadius: "0.5rem",
-            }}
-            className="blurhash transition-opacity duration-500 ease-in-out top-0 left-0"
-          />
-        )}
+
+        <Blurhash
+          hash={blurHash}
+          resolutionX={32}
+          resolutionY={32}
+          punch={1}
+          style={{
+            width: "100%",
+            height: "0",
+            paddingBottom: `${paddingBottom}%`,
+            borderRadius: "0.5rem",
+          }}
+          className="blurhash transition-opacity duration-500 ease-in-out top-0 left-0"
+        />
 
         {postHovered && (
           <div
@@ -118,7 +121,7 @@ const Pin = ({ pin }) => {
                   <MdDownloadForOffline />
                 </a>
               </div>
-              {alreadySaved ? (
+              {alreadySaved || alreadySavedStatus ? (
                 <button
                   type="button"
                   className="bg-red-500 opacity-70 hover:opacity-100 text-white font-bold px-5 py-1 text-base rounded-3xl hover:shadow-md outline-none"
@@ -171,7 +174,7 @@ const Pin = ({ pin }) => {
 
       {/* user profile starts */}
       <Link
-        to={`user-profile/${postedBy?._id}`}
+        to={`/user-profile/${postedBy?._id}`}
         className="flex gap-1 mt-1 items-center"
       >
         <img

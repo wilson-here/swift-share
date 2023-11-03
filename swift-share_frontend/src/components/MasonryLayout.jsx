@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
 import Pin from "./Pin";
 import { client } from "../client";
-import {
-  initialLoadQuery,
-  loadMoreQuery,
-  loadMoreQuerySameCat,
-} from "../utils/data";
+import { initialLoadQuery } from "../utils/data";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Spinner from "./Spinner";
 
@@ -20,22 +16,14 @@ const breakpointObj = {
   375: 1,
 };
 
-const MasonryLayout = ({ pins, setPins, additionalClass, cat }) => {
-  const [hasMore, setHasMore] = useState(true);
-
-  const fetchData = async () => {
-    let result;
-    if (!cat) {
-      result = await client.fetch(loadMoreQuery(pins?.length));
-    } else {
-      result = await client.fetch(loadMoreQuerySameCat(pins?.length, cat));
-    }
-    setPins(result);
-    if (result.length === pins?.length) {
-      setHasMore(false);
-    }
-  };
-
+const MasonryLayout = ({
+  pins,
+  setPins,
+  additionalClass,
+  hasMore,
+  fetchData,
+  marker,
+}) => {
   const refresh = async () => {
     const result = await client.fetch(initialLoadQuery);
     setPins(result);
@@ -46,8 +34,10 @@ const MasonryLayout = ({ pins, setPins, additionalClass, cat }) => {
       <InfiniteScroll
         dataLength={pins?.length}
         scrollableTarget="right"
-        next={fetchData}
-        hasMore={hasMore}
+        next={() => {
+          if (pins?.length >= 10) fetchData();
+        }}
+        hasMore={pins?.length >= 10 ? hasMore : false}
         scrollThreshold={0.9}
         loader={<Spinner additionalClass="mb-8" />}
         endMessage={
@@ -69,9 +59,10 @@ const MasonryLayout = ({ pins, setPins, additionalClass, cat }) => {
           className={`flex animate-slide-fwd ${additionalClass}`}
           breakpointCols={breakpointObj}
         >
-          {pins?.map((pin) => (
-            <Pin key={pin._id} pin={pin} className="w-max" />
-          ))}
+          {pins &&
+            pins.map((pin) => (
+              <Pin key={pin._id} pin={pin} className="w-max" />
+            ))}
         </Masonry>
       </InfiniteScroll>
     </div>

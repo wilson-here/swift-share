@@ -5,7 +5,11 @@ import { v4 as uuidv4 } from "uuid";
 
 import { client, urlFor } from "../client";
 import MasonryLayout from "./MasonryLayout";
-import { pinDetailMorePinQuery, pinDetailQuery } from "../utils/data";
+import {
+  loadMoreQuerySameCat,
+  pinDetailMorePinQuery,
+  pinDetailQuery,
+} from "../utils/data";
 import Spinner from "./Spinner";
 
 const PinDetail = ({ user, scrollRef }) => {
@@ -13,6 +17,8 @@ const PinDetail = ({ user, scrollRef }) => {
   const [pinDetails, setPinDetails] = useState(null);
   const [comment, setComment] = useState("");
   const [addingComment, setAddingComment] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [imageLoad, setImageLoad] = useState(false);
 
   const { pinId } = useParams();
 
@@ -61,6 +67,23 @@ const PinDetail = ({ user, scrollRef }) => {
           }
         });
     }
+  };
+
+  const fetchCatData = async () => {
+    const result = await client.fetch(
+      loadMoreQuerySameCat(pins?.length, pinDetails.category, pinId)
+    );
+    if (result.length) setPins(result);
+
+    if (result.length === pins?.length || !result.length) {
+      setHasMore(false);
+    }
+  };
+
+  const handleImageLoad = (e) => {
+    e.target.classList.remove("opacity-0");
+    e?.target?.nextElementSibling?.classList.add("opacity-0");
+    setImageLoad(true);
   };
 
   useEffect(() => {
@@ -181,7 +204,8 @@ const PinDetail = ({ user, scrollRef }) => {
           <MasonryLayout
             pins={pins}
             setPins={setPins}
-            cat={pinDetails.category}
+            hasMore={hasMore}
+            fetchData={fetchCatData}
           />
         </>
       ) : (

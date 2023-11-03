@@ -43,7 +43,8 @@ export const searchQuery = (searchTerm) => {
   const query = `*[_type == "pin" && title match '${searchTerm}*' || category match '${searchTerm}*' || about match '${searchTerm}*']{
     image{
       asset->{
-        url
+        url,
+        metadata
       }
     },
     _id,
@@ -89,6 +90,30 @@ export const initialLoadQuery = `*[_type == "pin"] | order(_createdAt desc) {
   },
 }[0..9]`;
 
+export const initialLoadQuerySameCat = (cat) =>
+  `*[_type == "pin" && category == "${cat}"] | order(_createdAt desc) {
+  image{
+    asset->{
+      url,
+      metadata
+    }
+  },
+  _id,
+  destination,
+  postedBy->{
+    _id,
+    userName,
+    image
+  },
+  save[]{
+    _key,
+    postedBy->{
+      _id,
+      userName,
+      image
+    },
+  },
+}[0..9]`;
 export const loadMoreQuery = (
   alreadyPinNum
 ) => `*[_type == "pin"] | order(_createdAt desc) {
@@ -117,6 +142,35 @@ export const loadMoreQuery = (
 
 export const loadMoreQuerySameCat = (
   alreadyPinNum,
+  cat,
+  pin
+) => `*[_type == "pin" && category == "${cat}"] && _id != '${
+  pin._id
+}'| order(_createdAt desc) {
+  image{
+    asset->{
+      url,
+      metadata
+    }
+  },
+  _id,
+  destination,
+  postedBy->{
+    _id,
+    userName,
+    image
+  },
+  save[]{
+    _key,
+    postedBy->{
+      _id,
+      userName,
+      image
+    },
+  },
+}[0..${alreadyPinNum + 10}]`;
+export const loadMoreQuerySameCatFeed = (
+  alreadyPinNum,
   cat
 ) => `*[_type == "pin" && category == "${cat}"] | order(_createdAt desc) {
   image{
@@ -142,12 +196,93 @@ export const loadMoreQuerySameCat = (
   },
 }[0..${alreadyPinNum + 10}]`;
 
+export const loadMoreQuerySearch = (
+  alreadyPinNum,
+  searchTerm
+) => `*[_type == "pin" && title match '${searchTerm}*' || category match '${searchTerm}*' || about match '${searchTerm}*'] | order(_createdAt desc) {
+  image{
+    asset->{
+      url,
+      metadata
+    }
+  },
+  _id,
+  destination,
+  postedBy->{
+    _id,
+    userName,
+    image
+  },
+  save[]{
+    _key,
+    postedBy->{
+      _id,
+      userName,
+      image
+    },
+  },
+}[0..${alreadyPinNum + 10}]`;
+
+export const loadMoreQuerySameUserCreated = (
+  alreadyPinNum,
+  userId
+) => `*[_type == "pin" && userId == '${userId}'] | order(_createdAt desc) {
+  image{
+    asset->{
+      url,
+      metadata
+    }
+  },
+  _id,
+  destination,
+  postedBy->{
+    _id,
+    userName,
+    image
+  },
+  save[]{
+    _key,
+    postedBy->{
+      _id,
+      userName,
+      image
+    },
+  },
+}[0..${alreadyPinNum + 10}]`;
+
+export const loadMoreQuerySameUserSaved = (
+  alreadyPinNum,
+  userId
+) => `*[_type == 'pin' && '${userId}' in save[].userId ] | order(_createdAt desc) {
+  image{
+    asset->{
+      url,
+      metadata
+    }
+  },
+  _id,
+  destination,
+  postedBy->{
+    _id,
+    userName,
+    image
+  },
+  save[]{
+    postedBy->{
+      _id,
+      userName,
+      image
+    },
+  },
+}[0..${alreadyPinNum + 10}]`;
+
 export const pinDetailQuery = (pinId) => {
   const query = `*[_type == "pin" && _id == '${pinId}']{
     // image of the pin
     image{
       asset->{
-        url
+        url,
+        metadata
       }
     },
     // id of the pin doc 
@@ -191,7 +326,8 @@ export const pinDetailMorePinQuery = (pin) => {
   const query = `*[_type == "pin" && category == '${pin.category}' && _id != '${pin._id}' ]{
     image{
       asset->{
-        url
+        url,
+        metadata
       }
     },
     _id,
@@ -218,7 +354,8 @@ export const userCreatedPinsQuery = (userId) => {
   const query = `*[ _type == 'pin' && userId == '${userId}'] | order(_createdAt desc){
     image{
       asset->{
-        url
+        url,
+        metadata
       }
     },
     _id,
@@ -235,7 +372,7 @@ export const userCreatedPinsQuery = (userId) => {
         image
       },
     },
-  }`;
+  }[0..9]`;
   return query;
 };
 
@@ -244,7 +381,8 @@ export const userSavedPinsQuery = (userId) => {
   const query = `*[_type == 'pin' && '${userId}' in save[].userId ] | order(_createdAt desc) {
     image{
       asset->{
-        url
+        url,
+        metadata
       }
     },
     _id,
@@ -261,6 +399,6 @@ export const userSavedPinsQuery = (userId) => {
         image
       },
     },
-  }`;
+  }[0..9]`;
   return query;
 };

@@ -4,17 +4,24 @@ import { useParams } from "react-router-dom";
 import { client } from "../client";
 import MasonryLayout from "./MasonryLayout.jsx";
 import Spinner from "./Spinner";
-import { initialLoadQuery, searchQuery } from "../utils/data";
+import {
+  initialLoadQuery,
+  initialLoadQuerySameCat,
+  loadMoreQuery,
+  loadMoreQuerySameCat,
+  loadMoreQuerySameCatFeed,
+} from "../utils/data";
 
 const Feed = () => {
   const [loading, setLoading] = useState(false);
   const { categoryId } = useParams();
   const [pins, setPins] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     if (categoryId) {
-      const query = searchQuery(categoryId);
+      const query = initialLoadQuerySameCat(categoryId);
       client.fetch(query).then((data) => {
         setPins(data);
         setLoading(false);
@@ -31,7 +38,38 @@ const Feed = () => {
     return <Spinner message="We are adding new ideas to your feed" />;
 
   if (!pins?.length) return <h2>No pins available</h2>;
-  return <div>{pins && <MasonryLayout pins={pins} setPins={setPins} />}</div>;
+
+  const fetchAllData = async () => {
+    const result = await client.fetch(loadMoreQuery(pins?.length));
+    setPins(result);
+    if (result.length === pins?.length) {
+      setHasMore(false);
+    }
+  };
+
+  const fetchCatData = async () => {
+    const result = await client.fetch(
+      loadMoreQuerySameCatFeed(pins?.length, categoryId)
+    );
+    if (result.length) setPins(result);
+
+    if (result.length === pins?.length || !result.length) {
+      setHasMore(false);
+    }
+  };
+
+  return (
+    <div>
+      {pins && (
+        <MasonryLayout
+          pins={pins}
+          setPins={setPins}
+          hasMore={hasMore}
+          fetchData={categoryId ? fetchCatData : fetchAllData}
+        />
+      )}
+    </div>
+  );
 };
 
 export default Feed;

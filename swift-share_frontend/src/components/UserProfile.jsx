@@ -3,6 +3,8 @@ import { AiOutlineLogout } from "react-icons/ai";
 import { useParams, useNavigate } from "react-router-dom";
 
 import {
+  loadMoreQuerySameUserCreated,
+  loadMoreQuerySameUserSaved,
   userCreatedPinsQuery,
   userQuery,
   userSavedPinsQuery,
@@ -26,6 +28,8 @@ const UserProfile = () => {
   const [pins, setPins] = useState(null);
   const [text, setText] = useState("Created"); //Created || Saved
   const [activeBtn, setActiveBtn] = useState("created");
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(null);
 
   const navigate = useNavigate();
   const { userId } = useParams();
@@ -46,14 +50,20 @@ const UserProfile = () => {
 
   useEffect(() => {
     if (text === "Created") {
+      setLoading(true);
+
       const createdPinsQuery = userCreatedPinsQuery(userId);
       client.fetch(createdPinsQuery).then((data) => {
         setPins(data);
+        setLoading(false);
       });
     } else {
+      setLoading(true);
+
       const savedPinsQuery = userSavedPinsQuery(userId);
       client.fetch(savedPinsQuery).then((data) => {
         setPins(data);
+        setLoading(false);
       });
     }
   }, [text, userId]);
@@ -61,6 +71,25 @@ const UserProfile = () => {
   if (!user) {
     return <Spinner message="Loading profile..." />;
   }
+  const fetchUserCreatedPinData = async () => {
+    const result = await client.fetch(
+      loadMoreQuerySameUserCreated(pins?.length, userId)
+    );
+    setPins(result);
+    if (result.length === pins?.length) {
+      setHasMore(false);
+    }
+  };
+
+  const fetchUserSavedPinData = async () => {
+    const result = await client.fetch(
+      loadMoreQuerySameUserSaved(pins?.length, userId)
+    );
+    setPins(result);
+    if (result.length === pins?.length) {
+      setHasMore(false);
+    }
+  };
 
   return (
     <div className="relative pb-2 h-full justify-center items-center">
@@ -122,8 +151,19 @@ const UserProfile = () => {
           </div>
           {pins?.length ? (
             <div className="px-2">
-              <MasonryLayout pins={pins} setPins={setPins} />
+              <MasonryLayout
+                pins={pins}
+                setPins={setPins}
+                hasMore={hasMore}
+                fetchData={
+                  activeBtn === "created"
+                    ? fetchUserCreatedPinData
+                    : fetchUserSavedPinData
+                }
+              />
             </div>
+          ) : loading ? (
+            <Spinner message="Loading pins..." />
           ) : (
             <div className="flex justify-center font-bold items-center w-full text-xl mt-2">
               No pins found
