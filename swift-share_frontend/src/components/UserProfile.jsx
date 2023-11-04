@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineLogout } from "react-icons/ai";
 import { useParams, useNavigate } from "react-router-dom";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 import {
   loadMoreQuerySameUserCreated,
@@ -25,10 +27,12 @@ const notActiveBtnStyles =
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
-  const [pins, setPins] = useState(null);
+  const [pinsCreated, setPinsCreated] = useState(null);
+  const [pinsSaved, setPinsSaved] = useState(null);
+  const [hasMoreCreated, setHasMoreCreated] = useState(true);
+  const [hasMoreSaved, setHasMoreSaved] = useState(true);
   const [text, setText] = useState("Created"); //Created || Saved
   const [activeBtn, setActiveBtn] = useState("created");
-  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(null);
 
   const navigate = useNavigate();
@@ -49,46 +53,44 @@ const UserProfile = () => {
   }, [userId]);
 
   useEffect(() => {
-    if (text === "Created") {
-      setLoading(true);
-
-      const createdPinsQuery = userCreatedPinsQuery(userId);
-      client.fetch(createdPinsQuery).then((data) => {
-        setPins(data);
-        setLoading(false);
-      });
-    } else {
-      setLoading(true);
-
-      const savedPinsQuery = userSavedPinsQuery(userId);
-      client.fetch(savedPinsQuery).then((data) => {
-        setPins(data);
-        setLoading(false);
-      });
-    }
-  }, [text, userId]);
+    setLoading(true);
+    const createdPinsQuery = userCreatedPinsQuery(userId);
+    client.fetch(createdPinsQuery).then((data) => {
+      setPinsCreated(data);
+    });
+    const savedPinsQuery = userSavedPinsQuery(userId);
+    client.fetch(savedPinsQuery).then((data) => {
+      setPinsSaved(data);
+    });
+    setLoading(false);
+  }, []);
 
   if (!user) {
     return <Spinner message="Loading profile..." />;
   }
   const fetchUserCreatedPinData = async () => {
     const result = await client.fetch(
-      loadMoreQuerySameUserCreated(pins?.length, userId)
+      loadMoreQuerySameUserCreated(pinsCreated?.length, userId)
     );
-    setPins(result);
-    if (result.length === pins?.length) {
-      setHasMore(false);
+    setPinsCreated(result);
+    if (pinsCreated?.length === result.length) {
+      setHasMoreCreated(false);
     }
   };
 
   const fetchUserSavedPinData = async () => {
     const result = await client.fetch(
-      loadMoreQuerySameUserSaved(pins?.length, userId)
+      loadMoreQuerySameUserSaved(pinsSaved?.length, userId)
     );
-    setPins(result);
-    if (result.length === pins?.length) {
-      setHasMore(false);
+    setPinsSaved(result);
+    if (pinsSaved?.length === result.length) {
+      setHasMoreSaved(false);
     }
+  };
+
+  const handleImageLoad = (e) => {
+    e.target.classList.remove("opacity-0");
+    e?.target?.previousElementSibling?.classList.add("hidden");
   };
 
   return (
@@ -96,13 +98,24 @@ const UserProfile = () => {
       <div className="flex flex-col pb-5">
         <div className="relative flex flex-col mb-7">
           <div className="flex flex-col justify-center items-center">
+            <div className="relative leading-none w-full text-[0px]">
+              <Skeleton
+                width="100%"
+                className="skeleton transition-opacity duration-500 ease-in-out absolute top-0 left-0 leading-none h-[370px] 2xl:h-[510px] text-[0px]"
+                containerClassName="leading-none text-[0px]"
+                style={{ fontSize: 0 }}
+              />
+              <img
+                src={randomImg}
+                className="w-full h-370 2xl:h-510 shadow-lg object-cover opacity-0 transition-opacity duration-500 ease-in-out"
+                alt="banner-pic"
+                onLoad={(e) => {
+                  handleImageLoad(e);
+                }}
+              />
+            </div>
             <img
-              src={randomImg}
-              className="w-full h-370 2xl:h-510 shadow-lg object-cover"
-              alt="banner-pic"
-            />
-            <img
-              className="rounded-full w-20 h-20 -mt-10 shadow-xl object-cover"
+              className="rounded-full w-20 h-20 -mt-10 shadow-xl object-cover relative z-10"
               src={user.image}
               alt="user-pic"
             />
@@ -124,8 +137,8 @@ const UserProfile = () => {
           <div className="text-center my-7">
             <button
               type="button"
-              onClick={(e) => {
-                setText(e.target.textContent);
+              onClick={() => {
+                setText("Created");
                 setActiveBtn("created");
               }}
               style={{ minWidth: "100px" }}
@@ -137,8 +150,8 @@ const UserProfile = () => {
             </button>
             <button
               type="button"
-              onClick={(e) => {
-                setText(e.target.textContent);
+              onClick={() => {
+                setText("Saved");
                 setActiveBtn("saved");
               }}
               style={{ minWidth: "100px" }}
@@ -149,21 +162,27 @@ const UserProfile = () => {
               Saved
             </button>
           </div>
-          {pins?.length ? (
+
+          {loading ? (
+            <Spinner message="Loading pins..." />
+          ) : pinsCreated && text === "Created" ? (
             <div className="px-2">
               <MasonryLayout
-                pins={pins}
-                setPins={setPins}
-                hasMore={hasMore}
-                fetchData={
-                  activeBtn === "created"
-                    ? fetchUserCreatedPinData
-                    : fetchUserSavedPinData
-                }
+                pins={pinsCreated}
+                setPins={setPinsCreated}
+                hasMore={hasMoreCreated}
+                fetchData={fetchUserCreatedPinData}
               />
             </div>
-          ) : loading ? (
-            <Spinner message="Loading pins..." />
+          ) : pinsSaved && text === "Saved" ? (
+            <div className="px-2">
+              <MasonryLayout
+                pins={pinsSaved}
+                setPins={setPinsSaved}
+                hasMore={hasMoreSaved}
+                fetchData={fetchUserSavedPinData}
+              />
+            </div>
           ) : (
             <div className="flex justify-center font-bold items-center w-full text-xl mt-2">
               No pins found

@@ -11,6 +11,7 @@ import {
   pinDetailQuery,
 } from "../utils/data";
 import Spinner from "./Spinner";
+import { Blurhash } from "react-blurhash";
 
 const PinDetail = ({ user, scrollRef }) => {
   const [pins, setPins] = useState(null); // more similar pins
@@ -19,9 +20,9 @@ const PinDetail = ({ user, scrollRef }) => {
   const [addingComment, setAddingComment] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [imageLoad, setImageLoad] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const { pinId } = useParams();
-
   const addComment = () => {
     if (comment) {
       setAddingComment(true);
@@ -58,24 +59,35 @@ const PinDetail = ({ user, scrollRef }) => {
         .then((data) => {
           setPinDetails(data[0]);
           scrollRef.current.scrollTo(0, 0);
-
           if (data[0]) {
             query = pinDetailMorePinQuery(data[0]);
             client.fetch(query).then((response) => {
               setPins(response);
+              setLoading(false);
             });
           }
         });
     }
   };
 
+  const imgDimensions = pinDetails?.image?.asset?.metadata?.dimensions;
+  const blurHash = pinDetails?.image?.asset?.metadata?.blurHash;
+  const paddingBottom = `pb-[${(100 / imgDimensions?.aspectRatio).toFixed(
+    2
+  )}%]`;
+  const paddingBottomMd = `md:pb-[${(
+    100 /
+    3 /
+    imgDimensions?.aspectRatio
+  ).toFixed(2)}%]`;
+
   const fetchCatData = async () => {
     const result = await client.fetch(
-      loadMoreQuerySameCat(pins?.length, pinDetails.category, pinId)
+      loadMoreQuerySameCat(pins?.length, pinDetails?.category, pinId)
     );
-    if (result.length) setPins(result);
+    setPins(result);
 
-    if (result.length === pins?.length || !result.length) {
+    if (result.length === pins?.length) {
       setHasMore(false);
     }
   };
@@ -93,19 +105,44 @@ const PinDetail = ({ user, scrollRef }) => {
   if (!pinDetails) return <Spinner message="Loading pin ..." />;
 
   return (
-    <>
-      <div
-        className="flex xl:flex-row flex-col m-auto bg-white"
-        style={{ maxWidth: "1500px", borderRadius: "32px" }}
-      >
-        <div className="flex justify-center items-center md:items-start flex-initial">
-          <img
-            src={pinDetails?.image && urlFor(pinDetails.image).url()}
-            alt="user-post"
-            className="rounded-t-3xl rounded-b-lg"
-          />
+    <div className="max-w-[1500px]  mx-auto">
+      <div className="pin-details flex  flex-col justify-center md:flex-row bg-white rounded-xl">
+        <div className="max-w-[480px] w-full  md:w-1/3 mx-auto md:p-6">
+          <div
+            className={`flex justify-center items-center md:items-start h-0 ${
+              imgDimensions ? `${paddingBottom} ` : ""
+            } w-full   relative `}
+            style={
+              {
+                // paddingBottom: `${paddingBottom}`,
+              }
+            }
+          >
+            <img
+              src={pinDetails?.image && urlFor(pinDetails.image).url()}
+              alt="user-post"
+              className="rounded-xl w-full opacity-0 transition-opacity duration-500 ease-in-out absolute inset-0"
+              onLoad={(e) => {
+                handleImageLoad(e);
+              }}
+            />
+            <Blurhash
+              hash={blurHash}
+              resolutionX={32}
+              resolutionY={32}
+              punch={1}
+              style={{
+                width: "100%",
+                height: "100%",
+                paddingBottom: `${paddingBottom}%`,
+                borderRadius: "0.5rem",
+              }}
+              className="blurhash transition-opacity duration-500 ease-in-out top-0 left-0"
+            />
+          </div>
         </div>
-        <div className="w-full p-5 flex-1 xl:min-w-620">
+
+        <div className="w-full p-5 md:w-2/3 xl:min-w-620">
           <div className="flex items-center justify-start">
             <div className="flex gap-2 items-center ">
               <a
@@ -114,7 +151,8 @@ const PinDetail = ({ user, scrollRef }) => {
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
-                className="bg-white w-9 h-9 rounded-full flex items-center justify-center text-dark text-xl opacity-75 hover:opacity-100 hover:shadow-md outline-none transition-opacity duration-300 ease"
+                className="bg-white w-9 h-9 r
+                ounded-full flex items-center justify-center text-dark text-xl opacity-75 hover:opacity-100 hover:shadow-md outline-none transition-opacity duration-300 ease"
               >
                 <MdDownloadForOffline />
               </a>
@@ -135,12 +173,12 @@ const PinDetail = ({ user, scrollRef }) => {
             <p className="mt-3">{pinDetails.about}</p>
           </div>
           <Link
-            to={`user-profile/${pinDetails?.postedBy?._id}`}
+            to={`/user-profile/${pinDetails?.postedBy?._id}`}
             className="flex gap-2 mt-5 items-center bg-white rounded-lg"
           >
             <img
               src={pinDetails?.postedBy?.image}
-              className="w-6 h-6 lg:w-8 lg:h-8rounded-full object-cover"
+              className="w-6 h-6 lg:w-8 lg:h-8 rounded-full object-cover"
               alt="user-profile"
             />
             <p className="font-semibold capitalize">
@@ -196,7 +234,9 @@ const PinDetail = ({ user, scrollRef }) => {
         </div>
       </div>
 
-      {pins?.length ? (
+      {loading ? (
+        <Spinner message="Loading more pins..." />
+      ) : pins?.length ? (
         <>
           <h2 className="text-center font-bold text-2xl mt-8 mb-4">
             More like this
@@ -205,13 +245,17 @@ const PinDetail = ({ user, scrollRef }) => {
             pins={pins}
             setPins={setPins}
             hasMore={hasMore}
-            fetchData={fetchCatData}
+            fetchData={() => {
+              fetchCatData();
+            }}
           />
         </>
       ) : (
-        <Spinner message="Loading more pins..." />
+        <div className="flex justify-center font-bold items-center w-full text-xl mt-2">
+          No pins found
+        </div>
       )}
-    </>
+    </div>
   );
 };
 

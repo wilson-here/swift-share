@@ -8,7 +8,6 @@ import {
   initialLoadQuery,
   initialLoadQuerySameCat,
   loadMoreQuery,
-  loadMoreQuerySameCat,
   loadMoreQuerySameCatFeed,
 } from "../utils/data";
 
@@ -16,7 +15,8 @@ const Feed = () => {
   const [loading, setLoading] = useState(false);
   const { categoryId } = useParams();
   const [pins, setPins] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMoreFeed, setHasMoreFeed] = useState(true);
+  const [hasMoreCat, setHasMoreCat] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -43,7 +43,7 @@ const Feed = () => {
     const result = await client.fetch(loadMoreQuery(pins?.length));
     setPins(result);
     if (result.length === pins?.length) {
-      setHasMore(false);
+      setHasMoreFeed(false);
     }
   };
 
@@ -54,7 +54,7 @@ const Feed = () => {
     if (result.length) setPins(result);
 
     if (result.length === pins?.length || !result.length) {
-      setHasMore(false);
+      setHasMoreCat(false);
     }
   };
 
@@ -64,7 +64,7 @@ const Feed = () => {
         <MasonryLayout
           pins={pins}
           setPins={setPins}
-          hasMore={hasMore}
+          hasMore={categoryId ? hasMoreCat : hasMoreFeed}
           fetchData={categoryId ? fetchCatData : fetchAllData}
         />
       )}

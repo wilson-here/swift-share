@@ -28,16 +28,13 @@ const MasonryLayout = ({
     const result = await client.fetch(initialLoadQuery);
     setPins(result);
   };
-
   return (
     <div id="masonryWrapper">
       <InfiniteScroll
         dataLength={pins?.length}
         scrollableTarget="right"
-        next={() => {
-          if (pins?.length >= 10) fetchData();
-        }}
-        hasMore={pins?.length >= 10 ? hasMore : false}
+        next={fetchData}
+        hasMore={pins?.length < 10 ? false : hasMore}
         scrollThreshold={0.9}
         loader={<Spinner additionalClass="mb-8" />}
         endMessage={

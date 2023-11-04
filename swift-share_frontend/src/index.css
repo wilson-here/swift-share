@@ -13,6 +13,7 @@ body {
   border-radius: 0.5rem;
 }
 
-.pin .blurhash {
+.pin .blurhash,
+.pin-details .blurhash {
   position: absolute !important;
 }

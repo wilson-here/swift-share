@@ -143,10 +143,8 @@ export const loadMoreQuery = (
 export const loadMoreQuerySameCat = (
   alreadyPinNum,
   cat,
-  pin
-) => `*[_type == "pin" && category == "${cat}"] && _id != '${
-  pin._id
-}'| order(_createdAt desc) {
+  pinId
+) => `*[_type == "pin" && category == "${cat}" && _id != '${pinId}'] | order(_createdAt desc) {
   image{
     asset->{
       url,
@@ -345,7 +343,7 @@ export const pinDetailMorePinQuery = (pin) => {
         image
       },
     },
-  }`;
+  }[0..9]`;
   return query;
 };
 

@@ -44,7 +44,7 @@ export default {
       title: 'PostedBy',
       type: 'postedBy',
     },
-    // save: mảng chứa thông tin người lưu pin
+    // save: mảng chứa thông tin người lưu this specific pin
     {
       name: 'save',
       title: 'Save',

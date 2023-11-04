@@ -15,22 +15,24 @@ const Pin = ({ pin }) => {
   const blurHash = image?.asset?.metadata?.blurHash;
   const paddingBottom = 100 / imgDimensions?.aspectRatio + "%";
 
+  const [saveNum, setSaveNum] = useState(save?.length);
   const [postHovered, setPostHovered] = useState(false);
-  const [savingPost, setSavingPost] = useState(false);
+  const [savingPost, setSavingPost] = useState(false); // change btn save to saving
   const [imageLoad, setImageLoad] = useState(false);
 
   const navigate = useNavigate();
   const user = fetchUser();
-  const alreadySaved = save?.filter(
-    (item) => item.postedBy?._id === user?.sub
-  )?.length;
+  const alreadySaved = // 0: this pin hasnt been saved | 1:this pin has been saved
+    save?.filter(
+      (item) => item.postedBy?._id === user?.sub //check if this pin is saved by current user
+    )?.length;
 
-  const [alreadySavedStatus, setAlreadySavedStatus] = useState(false);
+  const [alreadySavedStatus, setAlreadySavedStatus] = useState(alreadySaved);
 
   const savePin = (id) => {
     if (!alreadySaved) {
       setSavingPost(true);
-      // thêm object instance của schema save c(thông tin của 1 người dùng lưu pin) vào mảng save của pin
+
       client
         .patch(id) // id của doc pin hiện tại
         .setIfMissing({ save: [] })
@@ -45,11 +47,11 @@ const Pin = ({ pin }) => {
             userId: user?.sub,
           },
         ])
-        .commit()
-        .then(() => {
-          // window.location.reload();
+        .commit() // save current user info to save field of pin if current user click save button
+        .then((res) => {
           setAlreadySavedStatus(true);
           setSavingPost(false);
+          setSaveNum(res.save.length);
         });
     }
   };
@@ -96,7 +98,7 @@ const Pin = ({ pin }) => {
           punch={1}
           style={{
             width: "100%",
-            height: "0",
+            height: "100%",
             paddingBottom: `${paddingBottom}%`,
             borderRadius: "0.5rem",
           }}
@@ -121,12 +123,12 @@ const Pin = ({ pin }) => {
                   <MdDownloadForOffline />
                 </a>
               </div>
-              {alreadySaved || alreadySavedStatus ? (
+              {alreadySavedStatus ? (
                 <button
                   type="button"
                   className="bg-red-500 opacity-70 hover:opacity-100 text-white font-bold px-5 py-1 text-base rounded-3xl hover:shadow-md outline-none"
                 >
-                  {save?.length} Saved
+                  {saveNum} Saved
                 </button>
               ) : (
                 <button
