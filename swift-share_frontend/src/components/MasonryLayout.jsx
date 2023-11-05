@@ -38,7 +38,7 @@ const MasonryLayout = ({
         scrollThreshold={0.9}
         loader={<Spinner additionalClass="mb-8" />}
         endMessage={
-          <p className="text-gray-500 pt-4 py-8 font-bold italic text-center text-xs sm:text-base capitalize">
+          <p className="text-gray-500 pt-4 py-8 font-bold  text-center text-xs sm:text-base capitalize">
             - 👏👏👏 You're all caught up for now -
           </p>
         }

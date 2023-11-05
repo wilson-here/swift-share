@@ -5,7 +5,9 @@ import App from "./App";
 import "./index.css";
 ReactDOM.render(
   <Router>
-    <App />
+    <div style={{ WebkitTapHighlightColor: "transparent" }}>
+      <App />
+    </div>
   </Router>,
 
   document.getElementById("root")

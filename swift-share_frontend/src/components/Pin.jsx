@@ -68,7 +68,7 @@ const Pin = ({ pin }) => {
   };
 
   return (
-    <div className="mx-2 my-4 pin">
+    <div className="mx-1 my-4 pin shadow-lg p-2 rounded-lg">
       <div
         onMouseEnter={() => {
           setPostHovered(true);
@@ -177,14 +177,14 @@ const Pin = ({ pin }) => {
       {/* user profile starts */}
       <Link
         to={`/user-profile/${postedBy?._id}`}
-        className="flex gap-1 mt-1 items-center"
+        className="flex gap-2 mt-2 items-center"
       >
         <img
           src={postedBy?.image}
           className="w-6 h-6 lg:w-8 lg:h-8 rounded-full object-cover"
           alt="user-profile"
         />
-        <p className="font-semibold capitalize text-xs sm:text-base">
+        <p className="font-medium capitalize text-xs sm:text-sm">
           {postedBy?.userName}
         </p>
       </Link>

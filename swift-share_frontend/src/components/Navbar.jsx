@@ -21,7 +21,7 @@ const Navbar = ({ searchTerm, setSearchTerm, user }) => {
           className="p-2 w-full bg-white outline-none"
         />
       </div>
-      <div className="flex gap-3">
+      <div className="flex gap-3 shrink-0">
         <Link
           to={`user-profile/${user?._id}`}
           className="hidden md:block flex-shrink-0"
@@ -29,7 +29,7 @@ const Navbar = ({ searchTerm, setSearchTerm, user }) => {
           <img
             src={user.image}
             alt={`${user.userName}'s avatar`}
-            className="w-12 h-12 rounded-lg object-cover"
+            className="w-12 h-12 rounded-full object-cover"
           />
         </Link>
         <Link

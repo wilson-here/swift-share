@@ -21,7 +21,7 @@ const PinDetail = ({ user, scrollRef }) => {
   const [hasMore, setHasMore] = useState(true);
   const [imageLoad, setImageLoad] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const [pb, setPb] = useState("");
   const { pinId } = useParams();
   const addComment = () => {
     if (comment) {
@@ -58,7 +58,7 @@ const PinDetail = ({ user, scrollRef }) => {
 
         .then((data) => {
           setPinDetails(data[0]);
-          scrollRef.current.scrollTo(0, 0);
+          scrollRef?.current.scrollTo(0, 0);
           if (data[0]) {
             query = pinDetailMorePinQuery(data[0]);
             client.fetch(query).then((response) => {
@@ -72,9 +72,7 @@ const PinDetail = ({ user, scrollRef }) => {
 
   const imgDimensions = pinDetails?.image?.asset?.metadata?.dimensions;
   const blurHash = pinDetails?.image?.asset?.metadata?.blurHash;
-  const paddingBottom = `pb-[${(100 / imgDimensions?.aspectRatio).toFixed(
-    2
-  )}%]`;
+
   const paddingBottomMd = `md:pb-[${(
     100 /
     3 /
@@ -101,22 +99,22 @@ const PinDetail = ({ user, scrollRef }) => {
   useEffect(() => {
     fetchPinDetails();
   }, [pinId]);
+  useEffect(() => {
+    if (imgDimensions) {
+      const paddingBottomVal = 100 / imgDimensions?.aspectRatio + "%";
+      setPb(paddingBottomVal);
+    }
+  }, [imgDimensions, pinId]);
 
   if (!pinDetails) return <Spinner message="Loading pin ..." />;
 
   return (
     <div className="max-w-[1500px]  mx-auto">
-      <div className="pin-details flex  flex-col justify-center md:flex-row bg-white rounded-xl">
-        <div className="max-w-[480px] w-full  md:w-1/3 mx-auto md:p-6">
+      <div className="pin-details flex  flex-col justify-center lg:flex-row bg-white rounded-xl">
+        <div className="max-w-[480px] md:max-w-[unset] w-full lg:w-1/3 mx-auto md:p-6">
           <div
-            className={`flex justify-center items-center md:items-start h-0 ${
-              imgDimensions ? `${paddingBottom} ` : ""
-            } w-full   relative `}
-            style={
-              {
-                // paddingBottom: `${paddingBottom}`,
-              }
-            }
+            className={`flex justify-center items-center md:items-start h-0 w-full relative`}
+            style={{ paddingBottom: `${pb}` }}
           >
             <img
               src={pinDetails?.image && urlFor(pinDetails.image).url()}
@@ -134,7 +132,7 @@ const PinDetail = ({ user, scrollRef }) => {
               style={{
                 width: "100%",
                 height: "100%",
-                paddingBottom: `${paddingBottom}%`,
+                paddingBottom: `${pb}`,
                 borderRadius: "0.5rem",
               }}
               className="blurhash transition-opacity duration-500 ease-in-out top-0 left-0"
@@ -142,7 +140,7 @@ const PinDetail = ({ user, scrollRef }) => {
           </div>
         </div>
 
-        <div className="w-full p-5 md:w-2/3 xl:min-w-620">
+        <div className="w-full p-5 lg:w-2/3 xl:min-w-620">
           <div className="flex items-center justify-start">
             <div className="flex gap-2 items-center ">
               <a
@@ -167,7 +165,7 @@ const PinDetail = ({ user, scrollRef }) => {
             </a>
           </div>
           <div>
-            <h1 className="text-4xl font-bold break-words mt-3">
+            <h1 className="text-2xl lg:text-4xl font-bold break-words mt-3">
               {pinDetails.title}
             </h1>
             <p className="mt-3">{pinDetails.about}</p>
@@ -185,7 +183,7 @@ const PinDetail = ({ user, scrollRef }) => {
               {pinDetails?.postedBy?.userName}
             </p>
           </Link>
-          <h2 className="mt-5 text-2xl">Comments</h2>
+          <h2 className="mt-5 text-lg font-bold lg:text-xl">Comments</h2>
           {/* Comment content section */}
           <div className="max-h-370 overflow-y-auto">
             {pinDetails?.comments?.map((comment, i) => (
@@ -233,23 +231,20 @@ const PinDetail = ({ user, scrollRef }) => {
           </div>
         </div>
       </div>
-
+      <h2 className="text-center font-bold text-xl lg:text-2xl mt-9 mb-6 lgmt-12 lg:mb-8">
+        More like this
+      </h2>
       {loading ? (
-        <Spinner message="Loading more pins..." />
+        <Spinner additionalClass="mt-8" message="Loading more pins..." />
       ) : pins?.length ? (
-        <>
-          <h2 className="text-center font-bold text-2xl mt-8 mb-4">
-            More like this
-          </h2>
-          <MasonryLayout
-            pins={pins}
-            setPins={setPins}
-            hasMore={hasMore}
-            fetchData={() => {
-              fetchCatData();
-            }}
-          />
-        </>
+        <MasonryLayout
+          pins={pins}
+          setPins={setPins}
+          hasMore={hasMore}
+          fetchData={() => {
+            fetchCatData();
+          }}
+        />
       ) : (
         <div className="flex justify-center font-bold items-center w-full text-xl mt-2">
           No pins found
