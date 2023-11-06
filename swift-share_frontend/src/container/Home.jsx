@@ -74,7 +74,10 @@ const Home = () => {
         style={{ scrollBehavior: "smooth" }}
       >
         <Routes>
-          <Route path="/user-profile/:userId" element={<UserProfile />} />
+          <Route
+            path="/user-profile/:userId"
+            element={<UserProfile toggleSidebar={toggleSidebar} />}
+          />
           <Route
             path="/*"
             element={<Pins user={user && user} scrollRef={scrollRef} />}

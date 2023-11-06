@@ -25,7 +25,7 @@ const activeBtnStyles =
 const notActiveBtnStyles =
   "bg-primary-500 text-black font-bold p-2 rounded-full w-20 outline-none";
 
-const UserProfile = () => {
+const UserProfile = ({ toggleSidebar }) => {
   const [user, setUser] = useState(null);
   const [pinsCreated, setPinsCreated] = useState(null);
   const [pinsSaved, setPinsSaved] = useState(null);
@@ -115,7 +115,9 @@ const UserProfile = () => {
               />
             </div>
             <img
-              className="rounded-full w-20 h-20 -mt-10 shadow-xl object-cover relative z-10"
+              className={`rounded-full w-20 h-20 -mt-10 shadow-xl object-cover relative ${
+                !toggleSidebar ? "z-10" : ""
+              }`}
               src={user.image}
               alt="user-pic"
             />
