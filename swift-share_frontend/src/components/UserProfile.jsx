@@ -115,7 +115,7 @@ const UserProfile = () => {
               />
             </div>
             <img
-              className="rounded-full w-20 h-20 -mt-10 shadow-xl object-cover relative"
+              className="rounded-full w-20 h-20 -mt-10 shadow-xl object-cover relative z-10"
               src={user.image}
               alt="user-pic"
             />
