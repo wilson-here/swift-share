@@ -56,7 +56,7 @@ const Pin = ({ pin }) => {
     }
   };
   const deletePin = (id) => {
-    client.deletePin(id).then(() => {
+    client.delete(id).then(() => {
       window.location.reload();
     });
   };
