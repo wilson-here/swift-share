@@ -18,42 +18,53 @@ const Pin = ({ pin }) => {
   const [saveNum, setSaveNum] = useState(save?.length);
   const [postHovered, setPostHovered] = useState(false);
   const [savingPost, setSavingPost] = useState(false); // change btn save to saving
+  const [unSavingPost, setUnSavingPost] = useState(false); // change btn save to unsaving
   const [imageLoad, setImageLoad] = useState(false);
 
   const navigate = useNavigate();
   const user = fetchUser();
-  const alreadySaved = // 0: this pin hasnt been saved | 1:this pin has been saved
-    save?.filter(
-      (item) => item.postedBy?._id === user?.sub //check if this pin is saved by current user
-    )?.length;
+
+  // current user object in save array:
+  const currentUser = save?.filter((item) => item.postedBy?._id === user?.sub);
+
+  const alreadySaved = currentUser?.length; // 0: this pin hasnt been saved | 1:this pin has been saved
 
   const [alreadySavedStatus, setAlreadySavedStatus] = useState(alreadySaved);
 
   const savePin = (id) => {
-    if (!alreadySaved) {
-      setSavingPost(true);
-
-      client
-        .patch(id) // id của doc pin hiện tại
-        .setIfMissing({ save: [] })
-        .insert("after", "save[-1]", [
-          {
-            _key: uuidv4(),
-            // lấy thong tin của user save post: tìm trong các doc của user schema, doc có id là id của người dùng hiện tại đang đăng nhập (user.sub)
-            postedBy: {
-              _type: "postedBy",
-              _ref: user?.sub,
-            },
-            userId: user?.sub,
+    setSavingPost(true);
+    client
+      .patch(id) // id của doc pin hiện tại
+      .setIfMissing({ save: [] })
+      .insert("after", "save[-1]", [
+        {
+          _key: uuidv4(),
+          // lấy thong tin của user save post: tìm trong các doc của user schema, doc có id là id của người dùng hiện tại đang đăng nhập (user.sub)
+          postedBy: {
+            _type: "postedBy",
+            _ref: user?.sub,
           },
-        ])
-        .commit() // save current user info to save field of pin if current user click save button
-        .then((res) => {
-          setAlreadySavedStatus(true);
-          setSavingPost(false);
-          setSaveNum(res.save.length);
-        });
-    }
+          userId: user?.sub,
+        },
+      ])
+      .commit() // save current user info to save field of pin if current user click save button
+      .then((res) => {
+        setAlreadySavedStatus(1);
+        setSavingPost(false);
+        setSaveNum(res.save.length);
+      });
+  };
+  const unSavePin = (id) => {
+    setUnSavingPost(true);
+    client
+      .patch(id)
+      .unset([`save[postedBy._ref=="${user?.sub}"]`])
+      .commit()
+      .then((res) => {
+        setAlreadySavedStatus(0);
+        setUnSavingPost(false);
+        setSaveNum(res.save.length);
+      });
   };
   const deletePin = (id) => {
     client.delete(id).then(() => {
@@ -125,16 +136,22 @@ const Pin = ({ pin }) => {
               </div>
               {alreadySavedStatus ? (
                 <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    unSavePin(_id);
+                    console.log("hihi");
+                  }}
                   type="button"
                   className="bg-red-500 opacity-70 hover:opacity-100 text-white font-bold px-5 py-1 text-base rounded-3xl hover:shadow-md outline-none"
                 >
-                  {saveNum} Saved
+                  {unSavingPost ? "Unsaving" : `${saveNum} saved`}
                 </button>
               ) : (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     savePin(_id);
+                    console.log("hehe");
                   }}
                   type="button"
                   className="bg-red-500 opacity-70 hover:opacity-100 text-white font-bold px-5 py-1 text-base rounded-3xl hover:shadow-md outline-none"
@@ -162,7 +179,10 @@ const Pin = ({ pin }) => {
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    deletePin(_id);
+                    // deletePin(_id);
+                    client.delete(_id).then(() => {
+                      window.location.reload();
+                    });
                   }}
                   className="bg-white p-2 opacity-70 hover:opacity-100 text-dark font-bold text-base rounded-3xl hover:shadow-md outline-none flex-shrink-0"
                 >

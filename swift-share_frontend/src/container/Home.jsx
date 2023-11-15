@@ -9,6 +9,7 @@ import { userQuery } from "../utils/data";
 import { client } from "../client";
 import logo from "../assets/logo-yellow.svg";
 import { fetchUser } from "../utils/fetchUser";
+import Skeleton from "react-loading-skeleton";
 const Home = () => {
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const [user, setUser] = useState(null);
@@ -44,12 +45,24 @@ const Home = () => {
           <Link to="/" className="h-full flex items-center">
             <img src={logo} alt="logo" className="w-28" />
           </Link>
-          <Link to={`user-profile/${user?._id}`}>
-            <img
-              src={user?.image}
-              alt="logo"
-              className="w-10 lg:w-16 rounded-full object-cover"
-            />
+          <Link
+            to={`user-profile/${user?._id}`}
+            className="w-10 lg:w-16 rounded-full"
+          >
+            {user?.image ? (
+              <img
+                src={user?.image}
+                alt="logo"
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              <Skeleton
+                width="100%"
+                className="text-[0px]"
+                containerClassName="leading-none text-[0px]"
+                style={{ fontSize: 0 }}
+              />
+            )}
           </Link>
         </div>
         {toggleSidebar && (

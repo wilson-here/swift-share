@@ -12,8 +12,8 @@ const breakpointObj = {
   2000: 5,
   1200: 4,
   1000: 3,
-  500: 2,
-  375: 1,
+  850: 2,
+  500: 1,
 };
 
 const MasonryLayout = ({

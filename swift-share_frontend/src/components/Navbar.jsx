@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdAdd, IoMdSearch } from "react-icons/io";
+import Skeleton from "react-loading-skeleton";
 
 const Navbar = ({ searchTerm, setSearchTerm, user }) => {
   const navigate = useNavigate();
@@ -24,13 +25,22 @@ const Navbar = ({ searchTerm, setSearchTerm, user }) => {
       <div className="flex gap-3 shrink-0">
         <Link
           to={`user-profile/${user?._id}`}
-          className="hidden md:block flex-shrink-0"
+          className="hidden md:block flex-shrink-0 w-12 h-12 rounded-full"
         >
-          <img
-            src={user.image}
-            alt={`${user.userName}'s avatar`}
-            className="w-12 h-12 rounded-full object-cover"
-          />
+          {user.image ? (
+            <img
+              src={user.image}
+              alt={`${user.userName}'s avatar`}
+              className="w-full h-full rounded-full object-cover"
+            />
+          ) : (
+            <Skeleton
+              width="100%"
+              className="text-[0px]"
+              containerClassName="leading-none text-[0px]"
+              style={{ fontSize: 0 }}
+            />
+          )}
         </Link>
         <Link
           to="create-pin"
