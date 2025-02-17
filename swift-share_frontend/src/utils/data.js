@@ -1,10 +1,10 @@
 import luImage from "../assets/img/cat/lu.jpg";
 
 export const categories = [
-  {
-    name: "lu 🐷🐷🐷",
-    image: luImage,
-  },
+  // {
+  //   name: "lu 🐷🐷🐷",
+  //   image: luImage,
+  // },
   {
     name: "coding",
     image: "https://cdn-icons-png.flaticon.com/512/268/268998.png",
